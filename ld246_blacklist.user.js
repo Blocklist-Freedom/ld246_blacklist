@@ -32,7 +32,7 @@
         //main worker
         // remind way
         // post.style.display = "none"; // hid
-        post.style.backgroundColor = "red"; // blk
+        // post.style.backgroundColor = "red"; // blk
         post.style.opacity = "0.1"; //opa
         // remind way over
       }
