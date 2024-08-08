@@ -18,7 +18,7 @@
 (function () {
   "use strict";
 
-  const blockedUsers = ["science", "zxkmm"];
+  const blockedUsers = ["science", "和其他用户。。。。。"];
 
   let attempts = 0;
   const intervalId = setInterval(() => {
@@ -33,6 +33,7 @@
         // remind way
         // post.style.display = "none"; // hid
         post.style.backgroundColor = "red"; // blk
+        post.style.opacity = "0.1"; //opa
         // remind way over
       }
     });
