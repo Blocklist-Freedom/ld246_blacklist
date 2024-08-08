@@ -4,6 +4,7 @@
 // @version      0.3
 // @description  屏蔽指定用户的帖子
 // @author       zxkmm
+// @author       frostime
 // @match        https://ld246.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
