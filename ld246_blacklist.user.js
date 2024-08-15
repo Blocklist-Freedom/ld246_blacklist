@@ -5,6 +5,7 @@
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
+// @author       TCOTC
 // @homepage     https://github.com/zxkmm/ld246_blacklist
 // @supportURL   https://github.com/zxkmm/ld246_blacklist/issues
 // @match        https://ld246.com/*
