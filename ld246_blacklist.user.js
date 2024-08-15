@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         屏蔽指定用户帖子
 // @namespace    Violentmonkey Scripts
-// @version      0.3
+// @version      0.4
 // @description  屏蔽指定用户的帖子
 // @author       zxkmm
-// @author       frostime
 // @match        https://ld246.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -112,6 +111,8 @@
         // post.style.display = "none"; // hid
         // post.style.backgroundColor = "red"; // blk
         post.style.opacity = "0.1"; //opa
+        let abs = post.querySelector('.article-list__abstract');
+        if (abs) abs.style.display = 'none';
         // remind way over
       }
     });
