@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.7
+// @version      0.8
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
-// @author       TCOTC
 // @homepage     https://github.com/zxkmm/ld246_blacklist
 // @supportURL   https://github.com/zxkmm/ld246_blacklist/issues
 // @match        https://ld246.com/*
@@ -23,6 +22,7 @@
  *
  * */
 
+
 (function () {
   "use strict";
 
@@ -32,7 +32,8 @@
   let remindWay = GM_getValue(remindWayKey, "opacity"); // init var aka default as opa
 
   //public shame list
-  blockedUsers.push("science");
+  const publicShameUser = [];
+  // const publicShameUser = ["science"];
   //public shame end
 
   // 创建用户界面
@@ -89,6 +90,18 @@
     const blockedUsersList = document.createElement("ul");
     const updateBlockedUsersList = () => {
       blockedUsersList.innerHTML = "";
+
+      // 显示 publicShameUser
+      publicShameUser.forEach((user) => {
+        const listItem = document.createElement("li");
+        listItem.textContent = user;
+        const textBox = document.createElement("span");
+        textBox.textContent = " （ 这位是🤡，无法删除）";
+        listItem.appendChild(textBox);
+        blockedUsersList.appendChild(listItem);
+      });
+
+      // 显示 blockedUsers
       blockedUsers.forEach((user, index) => {
         const listItem = document.createElement("li");
         listItem.textContent = user;
@@ -109,7 +122,7 @@
     const remindWaySelect = document.createElement("select");
     const remindWays = [
       { value: "hide", text: "隐藏" },
-      { value: "blur", text: "模糊" },
+      { value: "blur", text: "模糊(悬浮时取消)" },
       { value: "opacity", text: "白雾" },
     ];
     remindWays.forEach((way) => {
@@ -151,13 +164,19 @@
         .querySelector(".article-list__user .tooltipped__user")
         .getAttribute("aria-name"); //fetch username
 
-      if (blockedUsers.includes(authorName)) {
+      if (blockedUsers.includes(authorName) || publicShameUser.includes(authorName)) {
         switch (remindWay) {
           case "hide":
             post.style.display = "none";
             break;
-          case "blur":
+          case "blur": //TODO: this one just not quite work cuz the setInterval do the tick per 1s for 10 times..... fix it later.....
             post.style.filter = "blur(5px)";
+            post.addEventListener("mouseenter", () => {
+              post.style.filter = "none";
+            });
+            post.addEventListener("mouseleave", () => {
+              post.style.filter = "blur(5px)";
+            });
             break;
           case "opacity":
             post.style.opacity = "0.1";
