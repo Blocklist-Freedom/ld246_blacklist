@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.6
+// @version      0.7
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
@@ -30,6 +30,10 @@
   const remindWayKey = "remindWay";
   let blockedUsers = GM_getValue(blockedUsersKey, []);
   let remindWay = GM_getValue(remindWayKey, "opacity"); // init var aka default as opa
+
+  //public shame list
+  blockedUsers.push("science");
+  //public shame end
 
   // 创建用户界面
   const createUI = () => {
