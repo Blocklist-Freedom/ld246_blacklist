@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         屏蔽指定用户帖子
+// @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.4
-// @description  屏蔽指定用户的帖子
+// @version      0.5
+// @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
+// @homepage     https://github.com/zxkmm/ld246_blacklist
+// @supportURL   https://github.com/zxkmm/ld246_blacklist/issues
 // @match        https://ld246.com/*
 // @grant        GM_setValue
 // @grant        GM_getValue
