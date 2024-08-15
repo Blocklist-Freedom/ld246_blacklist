@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.5
+// @version      0.6
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
-// @author       TCOTC
 // @homepage     https://github.com/zxkmm/ld246_blacklist
 // @supportURL   https://github.com/zxkmm/ld246_blacklist/issues
 // @match        https://ld246.com/*
@@ -13,6 +12,8 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // ==/UserScript==
+
+
 
 /*notes
  * 头像区块 style class：article-list__user fn__flex fn__flex-center
@@ -25,7 +26,9 @@
   "use strict";
 
   const blockedUsersKey = "blockedUsers";
+  const remindWayKey = "remindWay";
   let blockedUsers = GM_getValue(blockedUsersKey, []);
+  let remindWay = GM_getValue(remindWayKey, "opacity"); // init var aka default as opa
 
   // 创建用户界面
   const createUI = () => {
@@ -37,27 +40,23 @@
     uiContainer.style.padding = "10px";
     uiContainer.style.border = "1px solid #ccc";
     uiContainer.style.zIndex = "1000";
-    uiContainer.style.display = "none"; // 初始隐藏
 
-    // ui
     uiContainer.style.color = "white";
     uiContainer.style.backgroundColor = "grey";
-    //uiend
 
+    uiContainer.style.display = "none";
 
     const toggleButton = document.createElement("button");
-    toggleButton.textContent = "显示/隐藏黑名单管理";
+    toggleButton.textContent = "黑名单管理";
     toggleButton.style.position = "fixed";
     toggleButton.style.bottom = "10px";
     toggleButton.style.right = "0px";
     toggleButton.style.height = "40px";
     toggleButton.style.zIndex = "1001";
 
-    //ui
     toggleButton.style.color = "white";
     toggleButton.style.backgroundColor = "grey";
-    //uiend
-    
+
     toggleButton.addEventListener("click", () => {
       if (uiContainer.style.display === "none") {
         uiContainer.style.display = "block";
@@ -102,8 +101,34 @@
       });
     };
 
+    const remindWaySelect = document.createElement("select");
+    const remindWays = [
+      { value: "hide", text: "隐藏" },
+      { value: "blur", text: "模糊" },
+      { value: "opacity", text: "白雾" },
+    ];
+    remindWays.forEach((way) => {
+      const option = document.createElement("option");
+      option.value = way.value;
+      option.text = way.text;
+      if (way.value === remindWay) {
+        option.selected = true;
+      }
+      remindWaySelect.appendChild(option);
+    });
+
+    remindWaySelect.addEventListener("change", () => {
+      remindWay = remindWaySelect.value;
+      GM_setValue(remindWayKey, remindWay);
+    });
+
+    const label = document.createElement("label");
+    label.textContent = "标记帖子方式: ";
+    label.appendChild(remindWaySelect);
+
     uiContainer.appendChild(input);
     uiContainer.appendChild(addButton);
+    uiContainer.appendChild(label);
     uiContainer.appendChild(blockedUsersList);
     document.body.appendChild(uiContainer);
     document.body.appendChild(toggleButton);
@@ -122,20 +147,24 @@
         .getAttribute("aria-name"); //fetch username
 
       if (blockedUsers.includes(authorName)) {
-        //main worker
-        // remind way
-        // post.style.display = "none"; // hid
-        // post.style.backgroundColor = "red"; // blk
-        post.style.opacity = "0.1"; //opa
-        let abs = post.querySelector('.article-list__abstract');
-        if (abs) abs.style.display = 'none';
-        // remind way over
+        switch (remindWay) {
+          case "hide":
+            post.style.display = "none";
+            break;
+          case "blur":
+            post.style.filter = "blur(5px)";
+            break;
+          case "opacity":
+            post.style.opacity = "0.1";
+            let abs = post.querySelector('.article-list__abstract');
+            if (abs) abs.style.display = 'none';
+            break;
+        }
       }
     });
 
     attempts++;
     if (attempts >= 10) {
-      //TODO not hard coded
       clearInterval(intervalId);
     }
   }, 1000);
