@@ -38,6 +38,12 @@
     uiContainer.style.zIndex = "1000";
     uiContainer.style.display = "none"; // 初始隐藏
 
+    // ui
+    uiContainer.style.color = "white";
+    uiContainer.style.backgroundColor = "grey";
+    //uiend
+
+
     const toggleButton = document.createElement("button");
     toggleButton.textContent = "显示/隐藏黑名单管理";
     toggleButton.style.position = "fixed";
@@ -45,6 +51,12 @@
     toggleButton.style.right = "0px";
     toggleButton.style.height = "40px";
     toggleButton.style.zIndex = "1001";
+
+    //ui
+    toggleButton.style.color = "white";
+    toggleButton.style.backgroundColor = "grey";
+    //uiend
+    
     toggleButton.addEventListener("click", () => {
       if (uiContainer.style.display === "none") {
         uiContainer.style.display = "block";
