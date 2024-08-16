@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.8
+// @version      0.9
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
