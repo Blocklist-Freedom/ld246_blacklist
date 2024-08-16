@@ -188,7 +188,8 @@
     });
 
     attempts++;
-    if (attempts >= 10) {
+    // if (attempts >= 10) {
+      if(false){
       clearInterval(intervalId);
     }
   }, 1000);
