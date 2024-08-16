@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.9
+// @version      0.10
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
@@ -156,20 +156,23 @@
 
   createUI();
 
-  let attempts = 0;
-  const intervalId = setInterval(() => {
+  const blockPosts = () => {
     const posts = document.querySelectorAll(".article-list__item");
+    // console.log(!posts);
+    if (!posts) return;
     posts.forEach((post) => {
-      const authorName = post
-        .querySelector(".article-list__user .tooltipped__user")
-        .getAttribute("aria-name"); //fetch username
+      const authorElement = post.querySelector(".article-list__user .tooltipped__user");
+      if (!authorElement) return;
+
+      const authorName = authorElement.getAttribute("aria-name"); //fetch username
+      if (!authorName) return;
 
       if (blockedUsers.includes(authorName) || publicShameUser.includes(authorName)) {
         switch (remindWay) {
           case "hide":
             post.style.display = "none";
             break;
-          case "blur": //TODO: this one just not quite work cuz the setInterval do the tick per 1s for 10 times..... fix it later.....
+          case "blur":
             post.style.filter = "blur(5px)";
             post.addEventListener("mouseenter", () => {
               post.style.filter = "none";
@@ -186,11 +189,20 @@
         }
       }
     });
+  };
 
-    attempts++;
-    // if (attempts >= 10) {
-      if(false){
-      clearInterval(intervalId);
+  // 使用 MutationObserver 监听页面变化
+  const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        blockPosts();
+        // console.log("------blocked------");
+      }
     }
-  }, 1000);
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // 初始执行一次
+  blockPosts();
 })();
