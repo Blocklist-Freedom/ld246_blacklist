@@ -11,6 +11,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant        GM_addStyle
 // ==/UserScript==
 
 
@@ -35,6 +36,41 @@
   const publicShameUser = [];
   // const publicShameUser = ["science"];
   //public shame end
+  //Main style
+  const customStyle = `
+  .block-it.block-it__hide {
+    display: none;
+  }
+
+  .block-it.block-it__opacity {
+    opacity: 0.1;
+  }
+  .block-it.block-it__opacity .article-list__abstract {
+    display: none;
+  }
+
+  .block-it.block-it__blur {
+    filter: blur(5px);
+  }
+  .block-it.block-it__blur:hover {
+    filter: none;
+  }
+
+  .block-it .article-list__panel {
+    padding: 5px 15px;
+  }
+  .block-it .article-list__title--view, .block-it .article-list__title>a {
+    font-size: 14px;
+  }
+  .block-it .article-list__abstract {
+    font-size: 12px;
+  }
+  .block-it .tooltipped__user {
+    height: 12px;
+    width: 12px;
+  }
+  `;
+  GM_addStyle(customStyle);
 
   // 创建用户界面
   const createUI = () => {
@@ -168,24 +204,24 @@
       if (!authorName) return;
 
       if (blockedUsers.includes(authorName) || publicShameUser.includes(authorName)) {
+        post.classList.toggle('block-it', true);
         switch (remindWay) {
           case "hide":
-            post.style.display = "none";
+            post.classList.toggle('block-it__hide', true);
             break;
           case "blur":
+            post.classList.toggle('block-it__blur', true);
+            /*
             post.style.filter = "blur(5px)";
             post.addEventListener("mouseenter", () => {
               post.style.filter = "none";
             });
             post.addEventListener("mouseleave", () => {
               post.style.filter = "blur(5px)";
-            });
+            });*/
             break;
           case "opacity":
-            post.style.opacity = "0.1";
-            let abs = post.querySelector('.article-list__abstract');
-            if (abs) abs.style.display = 'none';
-            break;
+            post.classList.toggle('block-it__opacity', true);
         }
       }
     });
