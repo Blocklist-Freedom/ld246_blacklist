@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.1.2
+// @version      0.1.3
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
@@ -109,9 +109,11 @@
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = "留空自动加当前人";
+    input.style.marginRight = "10px";
 
     const addButton = document.createElement("button");
     addButton.textContent = "添加到黑名单";
+    addButton.style.marginRight = "10px";
     addButton.addEventListener("click", () => {
       var username = input.value.trim();
       if (!username) {
@@ -126,6 +128,10 @@
     });
 
     const blockedUsersList = document.createElement("ul");
+    blockedUsersList.style.marginTop = "10px";
+    blockedUsersList.style.marginBottom = "10px";
+    blockedUsersList.style.paddingLeft = "20px";
+
     const updateBlockedUsersList = () => {
       blockedUsersList.innerHTML = "";
 
@@ -137,6 +143,7 @@
         textBox.textContent = " （ 这位是🤡，无法删除）";
         listItem.appendChild(textBox);
         blockedUsersList.appendChild(listItem);
+        listItem.style.marginBottom = "5px";
       });
 
       // 显示 blockedUsers
@@ -146,6 +153,7 @@
 
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "删除";
+        deleteButton.style.marginLeft = "10px";
         deleteButton.addEventListener("click", () => {
           blockedUsers.splice(index, 1);
           GM_setValue(blockedUsersKey, blockedUsers);
@@ -154,10 +162,12 @@
 
         listItem.appendChild(deleteButton);
         blockedUsersList.appendChild(listItem);
+        listItem.style.marginBottom = "5px";
       });
     };
 
     const remindWaySelect = document.createElement("select");
+    remindWaySelect.style.marginLeft = "10px";
     const remindWays = [
       { value: "hide", text: "隐藏" },
       { value: "blur", text: "模糊(悬浮时取消)" },
@@ -211,11 +221,11 @@
                         <div class="ft__fade ft__smaller">
                         </div>
                     </div>
-     * 
-     * 
+     *
+     *
      * style class  `article__sideuser`
      * string elem `a`
-     * 
+     *
      */
     const sideuserElement = document.querySelector(".article__sideuser");
 
@@ -259,7 +269,7 @@
     if (!posts) return;
     posts.forEach((post) => {
       const authorElement = post.querySelector(
-        ".article-list__user .tooltipped__user"
+        ".article-list__user .tooltipped__user",
       );
       if (!authorElement) return;
 
