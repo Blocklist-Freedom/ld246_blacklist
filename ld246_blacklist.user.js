@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.1.4
+// @version      0.1.5
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
@@ -79,47 +79,124 @@
 
   // 创建用户界面
   const createUI = () => {
+    const styles = `
+      .modern-ui {
+        background-color: #000000;
+        border: 1px solid #e3e3e3;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        width: 280px;
+      }
+      .modern-ui input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #000000;
+        border-radius: 3px;
+        box-sizing: border-box;
+        background-color: #333333 !important;
+        color: #e0e0e0 !important;
+      }
+      .modern-ui button, .modern-ui select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #000000;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+      .modern-ui select {
+        background-color: #333333;
+        color: #e0e0e0;
+      }
+      .modern-ui button {
+        background-color: #FFA500;
+        color: #000000;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .modern-ui button:hover {
+        background-color: #FF8C00;
+      }
+      .modern-ui ul {
+        list-style-type: none;
+        padding: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #000000;
+        border-radius: 3px;
+      }
+      .modern-ui li {
+        background-color: #505050;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #e0e0e0;
+      }
+      .modern-ui li:last-child {
+        border-bottom: none;
+      }
+      .modern-ui li button {
+        width: auto;
+        padding: 3px 8px;
+        margin: 0;
+        background-color: #FFA500;
+        color: #000000;
+      }
+      .modern-ui li button:hover {
+        background-color: #FF8C00;
+      }
+      .toggle-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #FFA500;
+        color: #000000;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      .toggle-button:hover {
+        background-color: #FF8C00;
+      }
+      .modern-ui label {
+        color: #e0e0e0;
+      }
+      `;
+
+    const styleElement = document.createElement("style");
+    styleElement.textContent = styles;
+    document.head.appendChild(styleElement);
+
     const uiContainer = document.createElement("div");
+    uiContainer.className = "modern-ui";
     uiContainer.style.position = "fixed";
-    uiContainer.style.bottom = "50px";
-    uiContainer.style.right = "0px";
-    uiContainer.style.backgroundColor = "white";
-    uiContainer.style.padding = "10px";
-    uiContainer.style.border = "1px solid #ccc";
+    uiContainer.style.bottom = "80px";
+    uiContainer.style.right = "20px";
     uiContainer.style.zIndex = "1000";
-
-    uiContainer.style.color = "white";
-    uiContainer.style.backgroundColor = "grey";
-
     uiContainer.style.display = "none";
 
     const toggleButton = document.createElement("button");
     toggleButton.textContent = "黑名单管理";
-    toggleButton.style.position = "fixed";
-    toggleButton.style.bottom = "10px";
-    toggleButton.style.right = "0px";
-    toggleButton.style.height = "40px";
-    toggleButton.style.zIndex = "1001";
-
-    toggleButton.style.color = "white";
-    toggleButton.style.backgroundColor = "grey";
+    toggleButton.className = "toggle-button";
 
     toggleButton.addEventListener("click", () => {
-      if (uiContainer.style.display === "none") {
-        uiContainer.style.display = "block";
-      } else {
-        uiContainer.style.display = "none";
-      }
+      uiContainer.style.display =
+        uiContainer.style.display === "none" ? "block" : "none";
     });
 
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = "留空自动加当前人";
-    input.style.marginRight = "10px";
 
     const addButton = document.createElement("button");
     addButton.textContent = "添加到黑名单";
-    addButton.style.marginRight = "10px";
     addButton.addEventListener("click", () => {
       var username = input.value.trim();
       if (!username) {
@@ -134,47 +211,33 @@
     });
 
     const blockedUsersList = document.createElement("ul");
-    blockedUsersList.style.marginTop = "10px";
-    blockedUsersList.style.marginBottom = "10px";
-    blockedUsersList.style.paddingLeft = "20px";
-    blockedUsersList.classList.add("blocked-users-list");
 
     const updateBlockedUsersList = () => {
       blockedUsersList.innerHTML = "";
 
-      // 显示 publicShameUser
       publicShameUser.forEach((user) => {
         const listItem = document.createElement("li");
-        listItem.textContent = user;
-        const textBox = document.createElement("span");
-        textBox.textContent = " （ 这位是🤡，无法删除）";
-        listItem.appendChild(textBox);
+        listItem.innerHTML = `${user} <span style="color: #888;">（这位是🤡，无法删除）</span>`;
         blockedUsersList.appendChild(listItem);
-        listItem.style.marginBottom = "5px";
       });
 
-      // 显示 blockedUsers
       blockedUsers.forEach((user, index) => {
         const listItem = document.createElement("li");
-        listItem.textContent = user;
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "删除";
-        deleteButton.style.marginLeft = "10px";
+        listItem.innerHTML = `
+            <span>${user}</span>
+            <button class="delete-button">删除</button>
+          `;
+        const deleteButton = listItem.querySelector(".delete-button");
         deleteButton.addEventListener("click", () => {
           blockedUsers.splice(index, 1);
           GM_setValue(blockedUsersKey, blockedUsers);
           updateBlockedUsersList();
         });
-
-        listItem.appendChild(deleteButton);
         blockedUsersList.appendChild(listItem);
-        listItem.style.marginBottom = "5px";
       });
     };
 
     const remindWaySelect = document.createElement("select");
-    remindWaySelect.style.marginLeft = "10px";
     const remindWays = [
       { value: "hide", text: "隐藏" },
       { value: "blur", text: "模糊(悬浮时取消)" },
@@ -198,6 +261,7 @@
     const label = document.createElement("label");
     label.textContent = "标记帖子方式: ";
     label.appendChild(remindWaySelect);
+    label.style.color = "#e0e0e0";
 
     uiContainer.appendChild(input);
     uiContainer.appendChild(addButton);
