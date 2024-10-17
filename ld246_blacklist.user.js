@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         屏蔽链滴用户
 // @namespace    Violentmonkey Scripts
-// @version      0.1.5
+// @version      0.1.6
 // @description  屏蔽指定链滴用户的帖子
 // @author       zxkmm
 // @author       frostime
@@ -13,6 +13,8 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_addStyle
+// @downloadURL https://update.greasyfork.org/scripts/503258/%E5%B1%8F%E8%94%BD%E9%93%BE%E6%BB%B4%E7%94%A8%E6%88%B7.user.js
+// @updateURL https://update.greasyfork.org/scripts/503258/%E5%B1%8F%E8%94%BD%E9%93%BE%E6%BB%B4%E7%94%A8%E6%88%B7.meta.js
 // ==/UserScript==
 
 /*notes
@@ -73,6 +75,10 @@
     overflow-y: auto;
     mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  }
+
+  .block-it .vditor-reset {
+    font-size: 10px;
   }
   `;
   GM_addStyle(customStyle);
@@ -361,11 +367,49 @@
     });
   };
 
+  const blockThreads = () => {
+    const threads = document.querySelectorAll(".fn-flex");
+    if (!threads) return;
+
+    threads.forEach((post) => {
+        const authorLink = post.querySelector("a.ft-a-title.tooltipped__user");
+        if (!authorLink) return;
+
+        const authorName = authorLink.textContent.trim();
+
+    if (
+      blockedUsers.includes(authorName) ||
+      publicShameUser.includes(authorName)
+    ) {
+      post.classList.toggle("block-it", true);
+      switch (remindWay) {
+        case "hide":
+          post.classList.toggle("block-it__hide", true);
+          break;
+        case "blur":
+          post.classList.toggle("block-it__blur", true);
+          /*
+          post.style.filter = "blur(5px)";
+          post.addEventListener("mouseenter", () => {
+            post.style.filter = "none";
+          });
+          post.addEventListener("mouseleave", () => {
+            post.style.filter = "blur(5px)";
+          });*/
+          break;
+        case "opacity":
+          post.classList.toggle("block-it__opacity", true);
+      }
+    }
+  });
+};
+
   // 使用 MutationObserver 监听页面变化
   const observer = new MutationObserver((mutationsList, observer) => {
     for (const mutation of mutationsList) {
       if (mutation.type === "childList") {
         blockPosts();
+        blockThreads();
         // console.log("------blocked------");
       }
     }
